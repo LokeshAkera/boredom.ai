@@ -4,226 +4,219 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Boredom Buster Hub 🎉</title>
-  <meta name="description" content="Cure boredom with single-click activities, quick quizzes, memes and silly scenario prompts. Contribute your ideas to the community!" />
   <style>
-    :root{
-      --bg1: #fff6e6;
-      --bg2: #ffecf0;
-      --accent: #ff4668;
-      --muted: #6b6b7a;
-      --card: #ffffff;
-      --glass: rgba(255,255,255,0.65);
-      --radius: 18px;
-      --shadow: 0 12px 36px rgba(16,24,40,0.12);
-      --max-width: 1100px;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      color-scheme: light;
+    :root {
+      --bg1:#ffecd2;
+      --bg2:#fcb69f;
+      --accent:#ff6b6b;
+      --muted:#6b6b6b;
+      --card:#ffffff;
+      --glass: rgba(255,255,255,0.6);
+      --radius:18px;
+      --shadow: 0 8px 28px rgba(0,0,0,0.12);
+      --transition: all .2s ease;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
     }
-
-    *{box-sizing:border-box}
-    html,body{height:100%}
+    *{box-sizing:border-box;margin:0;padding:0;}
     body{
       margin:0;
       min-height:100vh;
-      background: radial-gradient(1200px 400px at 10% 10%, rgba(255,230,200,0.6), transparent 10%),
-                  linear-gradient(135deg,var(--bg1),var(--bg2));
+      background: linear-gradient(135deg,var(--bg1),var(--bg2));
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:1.25rem;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      color:#111827;
-      font-size: 16px;
+      padding:1.2rem;
+      color:#222;
     }
-
     .app {
       width:100%;
-      max-width:var(--max-width);
-      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.98));
-      border-radius:24px;
-      padding:20px;
+      max-width:1100px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.95));
+      border-radius:28px;
+      padding:24px;
       box-shadow:var(--shadow);
-      backdrop-filter: blur(6px) saturate(120%);
+      backdrop-filter: blur(10px) saturate(130%);
       display:grid;
       grid-template-columns: 1fr 380px;
-      gap:20px;
+      gap:22px;
       align-items:start;
+      transition:var(--transition);
     }
-
-    header{
+    header {
       grid-column:1/-1;
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:12px;
+      flex-wrap:wrap;
+      gap:8px;
     }
-    .brand{
-      display:flex;
-      gap:12px;
+    .logo {
+      display:flex; 
+      gap:12px; 
       align-items:center;
     }
-    .emoji{
+    .logo .emoji {
       font-size:36px;
-      transform: rotate(-9deg);
-      display:inline-block;
-      filter: drop-shadow(0 4px 10px rgba(255,70,104,0.12));
+      transform:rotate(-10deg);
+      animation:bounce 2s infinite;
     }
-    h1{margin:0;font-size:1.25rem;line-height:1}
-    p.lead{margin:0;color:var(--muted);font-size:0.95rem}
-
-    .controls{display:flex;flex-direction:column;gap:16px}
+    h1{margin:0; font-size:22px;}
+    p.lead{margin:0; color:var(--muted); font-size:14px}
+    .controls{display:flex; flex-direction:column; gap:20px;}
     .card{
       background:var(--card);
-      border-radius:14px;
-      padding:14px;
-      box-shadow: 0 8px 18px rgba(14,22,40,0.05);
-      border: 1px solid rgba(10,10,10,0.02);
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      transition:var(--transition);
     }
-
-    .big-btn{
+    .card:hover {
+      transform:translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    }
+    .big-btn {
       display:inline-flex;
       gap:10px;
       align-items:center;
-      justify-content:center;
-      background: linear-gradient(90deg,#fff18a,#ffd1a9);
-      border-radius:12px;
-      padding:12px 14px;
+      background:linear-gradient(90deg,#fff080,#ffd1a9);
+      border-radius:14px;
+      padding:12px 18px;
       border:none;
-      font-weight:700;
+      font-weight:600;
       cursor:pointer;
-      box-shadow: 0 6px 18px rgba(255,107,107,0.10);
-      transition: transform .12s ease, box-shadow .12s;
-      font-size:1rem;
+      box-shadow:0 6px 18px rgba(255,107,107,0.12);
+      transition:var(--transition);
     }
-    .big-btn:active{transform:translateY(2px)}
-    .big-btn.secondary{background:var(--glass); font-weight:600}
-
-    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .muted{color:var(--muted);font-size:0.9rem}
-
-    #activityResult{margin-top:10px;font-size:1rem;font-weight:700;min-height:48px}
-    .meta-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-    .tag{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,#fff6f6,#fff);font-weight:700;color:#333}
-
-    .quiz-question{font-weight:800;font-size:1rem}
-    .choices{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-    .choice{padding:10px;border-radius:10px;background:#fff;border:1px solid rgba(0,0,0,0.06);cursor:pointer;text-align:left}
-    .choice.correct{box-shadow:0 6px 18px rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.18)}
-    .choice.wrong{box-shadow:0 6px 18px rgba(244,63,94,0.06);border:1px solid rgba(244,63,94,0.14)}
-
-    .right{display:flex;flex-direction:column;gap:16px}
+    .big-btn:hover {transform:translateY(-2px); filter:brightness(1.05);}
+    .big-btn:active {transform:translateY(2px);}
+    .row{display:flex; gap:12px; align-items:center; flex-wrap:wrap;}
+    .muted{color:var(--muted); font-size:13px}
+    #activityResult{margin-top:12px; font-size:18px; font-weight:600;}
+    .quiz-question{font-weight:700; font-size:16px}
+    .choices{display:flex; flex-direction:column; gap:10px; margin-top:10px}
+    .choice{
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      background:#fff;
+      border:1px solid rgba(0,0,0,0.06);
+      transition:var(--transition);
+    }
+    .choice:hover {background: #fff6e6;}
+    .choice.correct{outline:3px solid rgba(76,175,80,0.2);}
+    .choice.wrong{outline:3px solid rgba(244,67,54,0.2);}
+    .small{font-size:13px;color:var(--muted)}
+    .right{display:flex; flex-direction:column; gap:20px;}
     .meme-img{
       width:100%;
-      height:260px;
-      border-radius:12px;
+      height:auto;
+      max-height:300px;
+      border-radius:14px;
       object-fit:cover;
-      background:linear-gradient(180deg,#f7f7f8,#efefef);
-      display:block;
-      cursor:zoom-in;
+      background:#f0f0f0;
+      transition:var(--transition);
     }
-    .meme-row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
-    .mini-btn{padding:8px 10px;border-radius:10px;border:none;cursor:pointer;font-weight:700;background:var(--glass)}
-
-    footer{grid-column:1/-1;margin-top:6px;font-size:0.9rem;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-
-    .contribute-cta{
-      text-align:center;
-      padding:12px;
+    .meme-img:hover {transform:scale(1.02);}
+    .meme-row{display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;}
+    .mini-btn{
+      padding:8px 12px;
       border-radius:12px;
-      background: linear-gradient(90deg,#fffbeb,#fff2f0);
-      border:1px solid rgba(0,0,0,0.02);
+      border:none;
+      cursor:pointer;
+      font-weight:600;
+      background:var(--glass);
+      backdrop-filter:blur(8px);
+      transition:var(--transition);
     }
-
-    .meme-modal{position:fixed;inset:0;background:rgba(0,0,0,0.72);display:flex;align-items:center;justify-content:center;z-index:1200}
-    .meme-modal-hide{display:none}
-    .meme-modal-content{width:95%;max-width:900px;background:#111; padding:14px;border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:12px}
-    .meme-modal-content img{max-width:100%;max-height:80vh;border-radius:8px;object-fit:contain}
-    .modal-controls{display:flex;gap:8px;align-items:center}
-    .close-modal{background:rgba(255,255,255,0.9);border:none;border-radius:8px;padding:8px 10px;font-weight:700;cursor:pointer}
-    .download-modal{background:linear-gradient(90deg,#ffd1a9,#fff080);border:none;border-radius:8px;padding:10px 12px;font-weight:800;cursor:pointer}
-
-    @media (max-width:1000px){
-      .app{grid-template-columns:1fr; padding:16px}
-      .right{order:3}
-      header{flex-direction:column;align-items:center;text-align:center;gap:6px}
-      .meme-img{height:220px}
+    .mini-btn:hover {background:rgba(255,255,255,0.8);}
+    .simulator-prompt{font-weight:700}
+    .tag{
+      display:inline-block;
+      padding:6px 8px;
+      border-radius:999px;
+      background:linear-gradient(90deg,#ffe6e6,#fff);
+      font-weight:600;
+      margin-right:6px
     }
-    @media (max-width:420px){
-      body{padding:10px}
-      .meme-img{height:180px}
-      .big-btn{padding:12px;font-size:0.98rem}
-      .card{padding:12px}
+    footer{
+      grid-column:1/-1;
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+    @media (max-width:980px){
+      .app{grid-template-columns:1fr; padding:18px}
+      .right{order:2}
+    }
+    @media (max-width:600px){
+      .big-btn{width:100%; justify-content:center;}
+      .meme-img{max-height:260px;}
+      .app{padding:14px;}
+      h1{font-size:20px;}
+    }
+    @keyframes bounce{
+      0%,100%{transform:translateY(0) rotate(-10deg);}
+      50%{transform:translateY(-6px) rotate(-10deg);}
     }
   </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="Boredom Buster Hub">
+  <div class="app">
     <header>
-      <div class="brand">
+      <div class="logo">
         <div class="emoji">🧩</div>
         <div>
           <h1>Boredom Buster Hub</h1>
-          <p class="lead">Quick activities, clever quizzes, memes & wild acting prompts ✨</p>
+          <p class="lead">Instant activities, quizzes, memes & silly scenarios ✨</p>
         </div>
       </div>
-      <div class="muted">Made with ❤️ — Demo</div>
+      <div class="small">Made with ❤️ — Single page demo</div>
     </header>
 
-    <!-- LEFT: Controls -->
     <div class="controls">
-      <!-- RANDOM ACTIVITY -->
-      <div class="card" aria-live="polite">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-          <div>
-            <div style="font-weight:900">🎲 Quick Pick</div>
-            <div class="muted">Instant micro-adventures — 1 click to start</div>
-          </div>
-          <button id="getActivityBtn" class="big-btn" aria-label="Get Random Activity">I'm bored — surprise me</button>
+      <!-- 🎲 RANDOM ACTIVITY -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div><div style="font-weight:800">🎲 Random Activity</div><div class="small">Click to get something fun</div></div>
+          <button id="getActivityBtn" class="big-btn">I'm Bored 😩</button>
         </div>
-        <div id="activityResult">Press the button to get a fun idea!</div>
-        <div class="meta-row">
-          <div class="muted">Type: <span id="activityType" class="tag">—</span></div>
-          <div class="muted">People: <span id="activityParticipants" class="tag">—</span></div>
-          <div class="muted">Cost: <span id="activityPrice" class="tag">—</span></div>
+        <div id="activityResult">Press the button to start!</div>
+        <div class="row">
+          <div class="small">Type: <span id="activityType" class="tag">—</span></div>
+          <div class="small">Participants: <span id="activityParticipants">—</span></div>
+          <div class="small">Price: <span id="activityPrice">—</span></div>
         </div>
       </div>
 
-      <!-- QUIZ -->
+      <!-- 🧠 QUIZ -->
       <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div>
-            <div style="font-weight:900">🧠 Quick Quiz</div>
-            <div class="muted">One fun question — immediate score</div>
-          </div>
-          <div style="text-align:right">
-            <div class="muted">Score</div>
-            <div id="quizScore" style="font-weight:900">0</div>
-          </div>
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div><div style="font-weight:800">🧠 Quick Quiz</div><div class="small">Answer one question at a time</div></div>
+          <div style="text-align:right"><div class="small">Score</div><div id="quizScore" style="font-weight:800">0</div></div>
         </div>
-
-        <div id="quizArea" style="margin-top:10px">
-          <div id="quizQuestion" class="quiz-question">Press "New Question" to begin</div>
+        <div id="quizArea" style="margin-top:12px">
+          <div id="quizQuestion" class="quiz-question">Press “New Question”</div>
           <div class="choices" id="choicesList" aria-hidden="true"></div>
-          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
             <button id="newQuestionBtn" class="mini-btn">New Question 🔁</button>
             <button id="nextQuestionBtn" class="mini-btn" disabled>Next ➜</button>
           </div>
         </div>
       </div>
 
-      <!-- SITUATION SIMULATOR -->
+      <!-- 🎭 SITUATION SIMULATOR -->
       <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div>
-            <div style="font-weight:900">🎭 Situation Studio</div>
-            <div class="muted">Act, narrate or improvise — short and silly</div>
-          </div>
-          <button id="simBtn" class="big-btn">Give me a scene 🎲</button>
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div><div style="font-weight:800">🎭 Situation Simulator</div><div class="small">Get a random fun prompt</div></div>
+          <button id="simBtn" class="big-btn">Surprise me 🎲</button>
         </div>
         <div style="margin-top:12px">
-          <div id="simResult" class="simulator-prompt" style="font-weight:800;min-height:48px">Try it — get a short scene or persona.</div>
-          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+          <div id="simResult" class="simulator-prompt">Try it — get a prompt!</div>
+          <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
             <button id="copySim" class="mini-btn">Copy</button>
             <button id="shareSim" class="mini-btn">Share</button>
           </div>
@@ -231,133 +224,91 @@
       </div>
     </div>
 
-    <!-- RIGHT: Meme + Tools -->
-    <aside class="right" aria-label="Extras">
+    <!-- RIGHT SIDE -->
+    <aside class="right">
+      <!-- 😂 MEME GENERATOR -->
       <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div>
-            <div style="font-weight:900">😂 Meme Machine</div>
-            <div class="muted">Tap "New Meme" then long-press or right-click the image to view & download</div>
-          </div>
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div><div style="font-weight:800">😂 Meme Generator</div><div class="small">Powered by meme-api.com</div></div>
           <button id="memeBtn" class="mini-btn">New Meme</button>
         </div>
-
         <img id="memeImg" class="meme-img" alt="Meme will appear here" />
         <div class="meme-row">
-          <div class="muted" id="memeSource">source: —</div>
+          <div class="small" id="memeSource">source: —</div>
           <div style="flex:1"></div>
-          <button id="downloadMeme" class="mini-btn">Download</button>
+          <button id="downloadMeme" class="mini-btn">Download ⬇️</button>
         </div>
       </div>
 
+      <!-- ✨ QUICK TOOLS -->
       <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div>
-            <div style="font-weight:900">✨ Quick Boosts</div>
-            <div class="muted">Tiny delights to lift your mood immediately</div>
-          </div>
-          <button id="surpriseBtn" class="mini-btn">Boost ✨</button>
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div><div style="font-weight:800">Quick Tools</div><div class="small">Tiny mood boosters ✨</div></div>
+          <button id="surpriseBtn" class="mini-btn">Random Boost ✨</button>
         </div>
         <div style="margin-top:12px">
-          <div id="boostResult" style="font-weight:800;color:#444">Welcome! Try a boost.</div>
+          <div id="boostResult" style="font-weight:700; color:#444">Welcome! Try something fun 👇</div>
         </div>
-      </div>
-
-      <div class="contribute-cta card" style="text-align:center;">
-        <h3 style="margin:0 0 6px 0">💡 Got a Fun Idea?</h3>
-        <p class="muted" style="margin:0 0 10px 0">Share activities, scenarios or tiny boosts with the community.</p>
-        <button id="contributeBtn" class="big-btn">Contribute 🚀</button>
       </div>
     </aside>
 
+    <div class="card" style="text-align:center;">
+      <h3>💡 Got a Fun Idea?</h3>
+      <p class="small">Share your own activity, scenario, or tool idea!</p>
+      <button id="contributeBtn" class="big-btn">Contribute 🚀</button>
+    </div>
+
     <footer>
-      <div>Tip: big buttons are your friends — press them! 🎉</div>
-      <div class="muted">No API keys required — community-friendly ✌️</div>
+      <div>Tip: Press the big colorful buttons! 🎉</div>
+      <div class="small">No API keys needed — all free sources ❤️</div>
     </footer>
   </div>
 
-  <!-- Meme Modal -->
-  <div id="memeModal" class="meme-modal meme-modal-hide" aria-hidden="true" role="dialog" aria-label="Meme preview">
-    <div class="meme-modal-content" role="document">
-      <div style="width:100%;display:flex;justify-content:flex-end;">
-        <button id="closeModal" class="close-modal" aria-label="Close">✖</button>
-      </div>
-      <img id="popupMemeImg" src="" alt="Full meme preview">
-      <div class="modal-controls">
-        <button id="popupDownloadBtn" class="download-modal">⬇️ Download Meme</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // --- Helpers ---
     const el = id => document.getElementById(id);
     const randomFrom = arr => arr[Math.floor(Math.random()*arr.length)];
-    const safeText = html => { const d = document.createElement('div'); d.innerHTML = html; return d.textContent; };
-
-    // --- Data ---
-    const LOCAL_ACTIVITIES = [
-      "Write a 6-word horror story about your last snack.",
-      "Create a two-move dance and perform it with gusto.",
-      "Find a new 90s song and hum the chorus dramatically.",
-      "Draw a tiny mascot for your current mood (5 mins).",
-      "Teach your pet (or stuffed animal) one trick and film it.",
-      "Make a postcard for a fictional planet and name it.",
-      "Swap a compliment with the next person you meet.",
-      "Try to rearrange three objects into something useful.",
-      "Make a 30-second ASMR using household items.",
-      "Design a signature handshake — record it with your phone."
-    ];
-
-    const SIM_PROMPTS = [
-      "You're a contestant on 'Inventor Idol' with only a toothbrush. Pitch your invention.",
-      "You're an undercover detective at a bakery — interrogate the muffin.",
-      "You run a tiny time-travel agency that schedules micro-trips (3 lines). Sell one.",
-      "You're hosting a chat show for plants — interview a cactus about relationships.",
-      "A minor superhero with ridiculous powers arrives at your cafe — improvise the greeting.",
-      "You're explaining a 'new' holiday to aliens. Describe the rituals in three steps.",
-      "You're a ghost auditioning for a role in a soap opera. Perform your monologue.",
-      "You're a jam reviewer — rate 'strawberry' using only musical metaphors.",
-      "A vending machine just started giving life advice. Read today's advice aloud.",
-      "You're a pirate who has lost their map but found a grocery list. Make it dramatic."
-    ];
-
-    const BOOSTS = [
-      "Micro-mission: smile at yourself in the mirror for 7 seconds 😄",
-      "Quick creativity: name three imaginary planets in 10 seconds 🌍",
-      "Micro-move: stretch your arms up and wiggle your fingers for 12s ✨",
-      "Tiny challenge: say 'red leather, yellow leather' three times fast!",
-      "Happy sound: hum the first tune that comes to mind for 6s 🎶",
-      "Little weirdness: invent a secret handshake for your left foot 🦶"
-    ];
+    const safeText = html => {const d=document.createElement('div');d.innerHTML=html;return d.textContent;};
 
     // --- Random Activity ---
+    const LOCAL_ACTIVITIES = [
+      "Take a 10-minute walk and notice 5 new things.",
+      "Write a six-line poem about your last meal.",
+      "Try to draw with your non-dominant hand for 2 minutes.",
+      "Learn one phrase in a language you don't know.",
+      "Make a tiny paper origami and give it a name.",
+      "Do a 60-second dance party — no shame!",
+      "Find a new song and listen to it with headphones.",
+      "Organize one small drawer or shelf for 5 minutes.",
+      "Look up a weird animal and learn one fact about it.",
+      "Tell someone a joke (or invent one)."
+    ];
+
     async function fetchRandomActivity(){
       const out = el('activityResult');
       const typeTag = el('activityType');
       const participants = el('activityParticipants');
       const price = el('activityPrice');
-      out.textContent = '🎯 Finding a delightful idea...';
-
+      out.textContent = '🎯 Finding fun ideas...';
       const endpoints = [
         'https://www.boredapi.com/api/activity',
         'https://api.allorigins.win/raw?url=https://www.boredapi.com/api/activity',
-        'https://thingproxy.freeboard.io/fetch/https://www.boredapi.com/api/activity'
+        'https://api.allorigins.cf/raw?url=https://www.boredapi.com/api/activity',
+        'https://thingproxy.freeboard.io/fetch/https://www.boredapi.com/api/activity',
+        'https://cors.bridged.cc/https://www.boredapi.com/api/activity'
       ];
-
       async function fetchAndParse(url){
         const resp = await fetch(url, { cache: 'no-store' });
-        if(!resp.ok) throw new Error('Bad response ' + resp.status);
+        if(!resp.ok) throw new Error('Bad response: ' + resp.status);
         const ct = resp.headers.get('content-type') || '';
         if(ct.includes('application/json')) return await resp.json();
         const txt = await resp.text();
-        try { return JSON.parse(txt); } catch(e){ throw new Error('Bad JSON'); }
+        try { return JSON.parse(txt); }
+        catch(e){ throw new Error('Failed to parse JSON from text'); }
       }
-
       for(const ep of endpoints){
         try{
           const data = await fetchAndParse(ep);
-          if(data && (data.activity || data.error)){
+          if(data && (data.activity || data.error)) {
             if(data.error) throw new Error('Bored API error');
             out.textContent = data.activity || 'Try something fun!';
             typeTag.textContent = data.type || '—';
@@ -365,10 +316,8 @@
             price.textContent = (data.price === 0) ? 'free' : (data.price <= 0.3 ? 'cheap' : 'paid');
             return;
           }
-        }catch(err){ console.warn('Activity fetch failed for', ep, err); }
+        }catch(err){console.warn('Activity fetch failed for', ep, err);}
       }
-
-      // fallback
       const local = randomFrom(LOCAL_ACTIVITIES);
       out.textContent = local;
       typeTag.textContent = 'local';
@@ -378,108 +327,101 @@
     el('getActivityBtn').addEventListener('click', fetchRandomActivity);
 
     // --- Quiz ---
-    let currentAnswer = null;
-    let quizScore = 0;
+    let currentAnswer=null, quizScore=0;
     async function newQuizQuestion(){
-      el('quizQuestion').textContent = 'Loading question...';
-      el('choicesList').innerHTML = '';
-      el('choicesList').setAttribute('aria-hidden','true');
-      el('nextQuestionBtn').disabled = true;
+      el('quizQuestion').textContent='Loading...';
+      el('choicesList').innerHTML='';
       try{
-        const r = await fetch('https://opentdb.com/api.php?amount=1&type=multiple');
-        const j = await r.json();
-        if(!j.results || !j.results.length) throw new Error('No question');
-        const q = j.results[0];
-        const correct = safeText(q.correct_answer);
-        const incorrect = q.incorrect_answers.map(safeText);
-        const opts = incorrect.concat([correct]).sort(()=>Math.random()-0.5);
-        currentAnswer = correct;
-        el('quizQuestion').textContent = safeText(q.question);
-        const list = el('choicesList');
+        const r=await fetch('https://opentdb.com/api.php?amount=1&type=multiple');
+        const j=await r.json();
+        const q=j.results[0];
+        const correct=safeText(q.correct_answer);
+        const opts=[...q.incorrect_answers.map(safeText),correct].sort(()=>Math.random()-0.5);
+        currentAnswer=correct;
+        el('quizQuestion').textContent=safeText(q.question);
         opts.forEach(opt=>{
-          const b = document.createElement('button');
-          b.className = 'choice';
-          b.type = 'button';
-          b.textContent = opt;
-          b.onclick = ()=> selectChoice(b, opt);
-          list.appendChild(b);
+          const b=document.createElement('button');
+          b.className='choice'; b.textContent=opt;
+          b.onclick=()=>selectChoice(b,opt);
+          el('choicesList').appendChild(b);
         });
-        list.setAttribute('aria-hidden','false');
-      }catch(e){
-        el('quizQuestion').textContent = 'Could not load question — try again.';
-        console.error(e);
-      }
+      }catch{el('quizQuestion').textContent='Failed to load question';}
     }
-
     function selectChoice(btn,opt){
-      const list = el('choicesList');
-      Array.from(list.children).forEach(c=>c.disabled = true);
-      if(opt === currentAnswer){
-        btn.classList.add('correct'); quizScore++; el('quizScore').textContent = quizScore;
-      } else {
-        btn.classList.add('wrong');
-        Array.from(list.children).forEach(c => { if(c.textContent === currentAnswer) c.classList.add('correct'); });
-      }
-      el('nextQuestionBtn').disabled = false;
+      [...el('choicesList').children].forEach(b=>b.disabled=true);
+      if(opt===currentAnswer){btn.classList.add('correct');quizScore++;el('quizScore').textContent=quizScore;}
+      else {btn.classList.add('wrong');[...el('choicesList').children].forEach(b=>{if(b.textContent===currentAnswer)b.classList.add('correct');});}
+      el('nextQuestionBtn').disabled=false;
     }
-    el('newQuestionBtn').addEventListener('click', ()=>{ newQuizQuestion(); el('nextQuestionBtn').disabled = true; });
-    el('nextQuestionBtn').addEventListener('click', ()=>{ newQuizQuestion(); el('nextQuestionBtn').disabled = true; });
+    el('newQuestionBtn').onclick=()=>{newQuizQuestion();el('nextQuestionBtn').disabled=true;};
+    el('nextQuestionBtn').onclick=()=>{newQuizQuestion();el('nextQuestionBtn').disabled=true;};
 
-    // --- Meme ---
+    // --- Meme Generator ---
     async function fetchMeme(){
-      const img = el('memeImg');
-      const source = el('memeSource');
-      img.alt = 'Loading...';
-      source.textContent = 'source: loading...';
+      const img=el('memeImg'), source=el('memeSource');
+      img.alt='Loading...';
       try{
-        const res = await fetch('https://meme-api.com/gimme');
-        const data = await res.json();
-        if(data && data.url){
-          img.src = data.url;
-          img.alt = data.title || 'Random meme';
-          source.textContent = `r/${data.subreddit || 'meme'}`;
-        } else throw new Error('No meme in response');
-      }catch(e){
-        console.warn('Meme failed', e);
-        img.alt = 'No meme available';
-        source.textContent = 'source: error';
-        img.src = '';
-      }
+        const res=await fetch('https://meme-api.com/gimme');
+        const data=await res.json();
+        img.src=data.url;
+        img.alt=data.title;
+        img.dataset.title = data.title;
+        source.textContent=`source: r/${data.subreddit}`;
+      }catch{img.alt='Error loading meme';}
     }
-    el('memeBtn').addEventListener('click', fetchMeme);
+    el('memeBtn').addEventListener('click',fetchMeme);
 
-    el('downloadMeme').addEventListener('click', async ()=>{
-      const src = el('memeImg').src;
-      if(!src) return alert('No meme to download — load one first.');
+    el('downloadMeme').addEventListener('click',async()=>{
+      const img=el('memeImg');
+      const src=img.src;
+      if(!src) return alert('No meme yet!');
       try{
-        const res = await fetch(src, {mode:'cors'});
-        const blob = await res.blob();
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'meme';
+        const res=await fetch(src);
+        const blob=await res.blob();
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        const fileName = (img.dataset.title ? img.dataset.title.replace(/[^\w\d-_]+/g,'_') : 'meme') + '.jpg';
+        a.href=url;
+        a.download=fileName;
         document.body.appendChild(a);
         a.click();
         a.remove();
+        URL.revokeObjectURL(url);
       }catch(e){
-        window.open(src, '_blank');
+        console.error('Download failed:',e);
+        alert('Failed to download meme.');
       }
     });
 
     // --- Situation Simulator ---
-    el('simBtn').addEventListener('click', ()=>{ el('simResult').textContent = randomFrom(SIM_PROMPTS); });
-    el('copySim').addEventListener('click', async ()=>{
-      const txt = el('simResult').textContent;
-      try { await navigator.clipboard.writeText(txt); el('copySim').textContent = 'Copied ✓'; setTimeout(()=>el('copySim').textContent='Copy',1200); } catch(e){ alert('Copy failed'); }
-    });
-    el('shareSim').addEventListener('click', ()=>{ navigator.share?.({title:'Situation Studio',text:el('simResult').textContent}); });
+    const SIM_PROMPTS=[
+      "You're a pirate chef cooking only canned goods.",
+      "Detective discovers the cat runs a rival bakery.",
+      "Superhero whose power is making objects fluffy.",
+      "Interview for Professional Bubble Wrap Popper.",
+      "Blind date after swapping phones by mistake.",
+      "Mayor of an island where hats are vegetables.",
+      "Aliens ask to borrow sugar — negotiate trade.",
+      "Fortune teller who predicts using song lyrics.",
+      "Cooking show for ghosts — signature dish?",
+      "Pet ad for mythical creatures (dragon, unicorn)."
+    ];
+    el('simBtn').onclick=()=>{el('simResult').textContent=randomFrom(SIM_PROMPTS);};
+    el('copySim').onclick=()=>{navigator.clipboard.writeText(el('simResult').textContent);};
+    el('shareSim').onclick=()=>{navigator.share?.({text:el('simResult').textContent});};
 
     // --- Quick Boosts ---
-    el('surpriseBtn').addEventListener('click', ()=>{
-      const b = randomFrom(BOOSTS);
-      const out = el('boostResult');
-      out.textContent = b;
-      out.animate([{opacity:0, transform:'translateY(-6px)'},{opacity:1, transform:'translateY(0)'}], {duration:320});
-    });
+    const BOOSTS=[
+      "Confetti! 🎉 (pretend it exploded)",
+      "You gained +5 curiosity points 🧠",
+      "Try saying a tongue twister 3 times!",
+      "Take 10 seconds to stretch 💪",
+      "Draw a doodle of a happy face ✏️",
+      "Sing the next line of your favorite song 🎵"
+    ];
+    el('surpriseBtn').onclick=()=>{el('boostResult').textContent=randomFrom(BOOSTS);};
+
+    // --- Community Ideas Loader ---
     async function loadCommunityIdeas(){
       try {
         const res = await fetch('/ideas');
@@ -495,18 +437,12 @@
       }
     }
 
+    el('contributeBtn').onclick = () => { window.location.href = 'contribute.html'; };
 
-    // --- Contribute ---
-    el('contributeBtn').addEventListener('click', ()=> window.location.href = 'contribute.html');
-
-    // --- Init ---
-    (function init(){
-      el('activityResult').textContent = 'Press "I\'m bored — surprise me" to start a micro-adventure!';
-      el('boostResult').textContent = 'Feeling meh? Tap Boost ✨';
-      fetchRandomActivity();
-      fetchMeme();
-      loadCommunityIdeas();
-    })();
+    // Auto-load a meme + activity on startup
+    fetchRandomActivity();
+    fetchMeme();
+    loadCommunityIdeas(); 
   </script>
 </body>
 </html>
