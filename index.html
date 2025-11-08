@@ -480,6 +480,21 @@
       out.textContent = b;
       out.animate([{opacity:0, transform:'translateY(-6px)'},{opacity:1, transform:'translateY(0)'}], {duration:320});
     });
+    async function loadCommunityIdeas(){
+      try {
+        const res = await fetch('/ideas');
+        const ideas = await res.json();
+        ideas.forEach(i=>{
+          if(i.type.includes('Random')) LOCAL_ACTIVITIES.push(i.content);
+          if(i.type.includes('Situation')) SIM_PROMPTS.push(i.content);
+          if(i.type.includes('Quick')) BOOSTS.push(i.content);
+        });
+        console.log(`Loaded ${ideas.length} community ideas 🎉`);
+      } catch (err) {
+        console.warn('Failed to load community ideas', err);
+      }
+    }
+
 
     // --- Contribute ---
     el('contributeBtn').addEventListener('click', ()=> window.location.href = 'contribute.html');
@@ -490,6 +505,7 @@
       el('boostResult').textContent = 'Feeling meh? Tap Boost ✨';
       fetchRandomActivity();
       fetchMeme();
+      loadCommunityIdeas();
     })();
   </script>
 </body>
