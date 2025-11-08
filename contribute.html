@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>💡 Contribute to Boredom Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* 🌈 Background & Layout */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee);
+      background-size: 400% 400%;
+      animation: gradientMove 10s ease infinite;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* 🌟 Card Container */
+    .card {
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.2);
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      padding: 2rem;
+      width: 90%;
+      max-width: 420px;
+      color: #fff;
+      text-align: center;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+    }
+
+    h3 {
+      margin-bottom: 0.5rem;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 0.6rem;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      outline: none;
+      font-size: 1rem;
+    }
+
+    input, select {
+      background: rgba(255,255,255,0.8);
+      color: #333;
+    }
+
+    textarea {
+      resize: none;
+      background: rgba(255,255,255,0.8);
+      color: #333;
+      height: 80px;
+    }
+
+    button {
+      background: #ff4d79;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      background: #ff2e63;
+    }
+
+    .small {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    #authMsg, #submitMsg {
+      margin-top: 0.4rem;
+    }
+
+    .success { color: #c8ffcb; }
+    .error { color: #ffb6b6; }
+
+    /* ✨ Emoji Animation */
+    .emoji {
+      font-size: 2.5rem;
+      animation: bounce 2s infinite ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="emoji" id="emoji">💡</div>
+    <h2>Boredom Hub – Share Fun Ideas!</h2>
+
+    <div id="authArea">
+      <h3>🔐 Login or Register</h3>
+      <input id="username" placeholder="Username">
+      <input id="password" type="password" placeholder="Password">
+      <button id="loginBtn">Login</button>
+      <button id="registerBtn">Register</button>
+      <p id="authMsg" class="small"></p>
+    </div>
+
+    <div id="ideaForm" class="hidden">
+      <h3>💭 Submit Your Idea</h3>
+      <select id="ideaType">
+        <option>🎲 Random Activity</option>
+        <option>🎭 Situation Simulator</option>
+        <option>✨ Quick Tools / Mood Boost</option>
+      </select>
+      <textarea id="ideaText" placeholder="Describe your fun idea..."></textarea>
+      <button id="sendIdeaBtn">Send ✉️</button>
+      <p id="submitMsg" class="small"></p>
+    </div>
+  </div>
+
+  <script>
+    // 🌀 Emoji change for fun
+    const emojis = ['💡','🎨','🎲','🎭','🎉','🚀','😄','🧠'];
+    setInterval(()=>{
+      document.getElementById('emoji').textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    }, 1500);
+
+    let loggedInUser = null;
+
+    async function loginOrRegister(url){
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const msg = document.getElementById('authMsg');
+
+      if(!username || !password){
+        msg.textContent = '⚠️ Please fill both fields.';
+        msg.className = 'small error';
+        return;
+      }
+
+      msg.textContent = '⏳ Processing...';
+      const res = await fetch(url, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+      if(data.success){
+        loggedInUser = username;
+        msg.textContent = '✅ ' + data.message;
+        msg.className = 'small success';
+        document.getElementById('authArea').classList.add('hidden');
+        document.getElementById('ideaForm').classList.remove('hidden');
+      } else {
+        msg.textContent = '❌ ' + (data.message || 'Login failed.');
+        msg.className = 'small error';
+      }
+    }
+
+    document.getElementById('loginBtn').onclick = ()=>loginOrRegister('/login');
+    document.getElementById('registerBtn').onclick = ()=>loginOrRegister('/register');
+
+    document.getElementById('sendIdeaBtn').onclick = async ()=>{
+      const idea = {
+        type: document.getElementById('ideaType').value,
+        content: document.getElementById('ideaText').value.trim(),
+        author: loggedInUser
+      };
+
+      const msg = document.getElementById('submitMsg');
+      if(!idea.content){
+        msg.textContent = '⚠️ Please write your idea before sending.';
+        msg.className = 'small error';
+        return;
+      }
+
+      msg.textContent = '⏳ Sending...';
+      const res = await fetch('/submit', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(idea)
+      });
+
+      const data = await res.json();
+      msg.textContent = data.success
+        ? '✅ Idea sent for admin approval!'
+        : '❌ Failed to submit.';
+      msg.className = data.success ? 'small success' : 'small error';
+      if(data.success) document.getElementById('ideaText').value = '';
+    };
+  </script>
+</body>
+</html>

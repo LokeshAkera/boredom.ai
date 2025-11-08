@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Boredom Buster Hub 🎉</title>
+  <style>
+    :root{
+      --bg1:#ffecd2;
+      --bg2:#fcb69f;
+      --accent:#ff6b6b;
+      --muted:#6b6b6b;
+      --card:#ffffff;
+      --glass: rgba(255,255,255,0.6);
+      --radius:18px;
+      --shadow: 0 8px 30px rgba(0,0,0,0.12);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      background: linear-gradient(135deg,var(--bg1),var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:2rem;
+      color:#222;
+    }
+    .app {
+      width:100%;
+      max-width:1100px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.95));
+      border-radius:28px;
+      padding:28px;
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(6px) saturate(120%);
+      display:grid;
+      grid-template-columns: 1fr 380px;
+      gap:22px;
+      align-items:start;
+    }
+    header{
+      grid-column:1/-1;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:6px;
+    }
+    .logo {display:flex; gap:12px; align-items:center;}
+    .logo .emoji{font-size:34px; transform:rotate(-10deg);}
+    h1{margin:0; font-size:20px;}
+    p.lead{margin:0; color:var(--muted); font-size:13px}
+    .controls{display:flex; flex-direction:column; gap:18px;}
+    .card{background:var(--card); border-radius:var(--radius); padding:16px; box-shadow: 0 6px 18px rgba(0,0,0,0.06);}
+    .big-btn{
+      display:inline-flex; gap:10px; align-items:center;
+      background:linear-gradient(90deg,#fff080,#ffd1a9);
+      border-radius:14px; padding:12px 16px;
+      border:none; font-weight:600; cursor:pointer;
+      box-shadow:0 6px 18px rgba(255,107,107,0.12);
+      transition:transform .12s ease;
+    }
+    .big-btn:active{transform:translateY(2px)}
+    .row{display:flex; gap:12px; align-items:center}
+    .muted{color:var(--muted); font-size:13px}
+    #activityResult{margin-top:12px; font-size:18px; font-weight:600;}
+    .quiz-question{font-weight:700; font-size:16px}
+    .choices{display:flex; flex-direction:column; gap:10px; margin-top:10px}
+    .choice{padding:10px 12px; border-radius:12px; cursor:pointer; background:#fff; border:1px solid rgba(0,0,0,0.06);}
+    .choice.correct{outline:3px solid rgba(76,175,80,0.18)}
+    .choice.wrong{outline:3px solid rgba(244,67,54,0.18)}
+    .small{font-size:13px;color:var(--muted)}
+    .right{display:flex; flex-direction:column; gap:18px;}
+    .meme-img{width:100%; height:260px; border-radius:14px; object-fit:cover; background:#f0f0f0;}
+    .meme-row{display:flex; gap:8px; align-items:center; margin-top:8px}
+    .mini-btn{padding:8px 10px; border-radius:12px; border:none; cursor:pointer; font-weight:600; background:var(--glass);}
+    .simulator-prompt{font-weight:700}
+    .tag{display:inline-block; padding:6px 8px; border-radius:999px; background:linear-gradient(90deg,#ffe6e6,#fff); font-weight:600; margin-right:6px}
+    footer{grid-column:1/-1; margin-top:8px; font-size:12px; color:var(--muted); display:flex; justify-content:space-between;}
+    @media (max-width:980px){.app{grid-template-columns:1fr; padding:18px}.right{order:2}}
+    .bounce{animation:bounce 2s infinite}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="logo">
+        <div class="emoji bounce">🧩</div>
+        <div>
+          <h1>Boredom Buster Hub</h1>
+          <p class="lead">Instant activities, quizzes, memes & silly scenarios ✨</p>
+        </div>
+      </div>
+      <div class="small">Made with ❤️ — Single page demo</div>
+    </header>
+
+    <div class="controls">
+      <!-- 🎲 RANDOM ACTIVITY -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;">
+          <div><div style="font-weight:800">🎲 Random Activity</div><div class="small">Click to get something fun</div></div>
+          <button id="getActivityBtn" class="big-btn">I'm Bored 😩</button>
+        </div>
+        <div id="activityResult">Press the button to start!</div>
+        <div class="row">
+          <div class="small">Type: <span id="activityType" class="tag">—</span></div>
+          <div class="small">Participants: <span id="activityParticipants">—</span></div>
+          <div class="small">Price: <span id="activityPrice">—</span></div>
+        </div>
+      </div>
+
+      <!-- 🧠 QUIZ -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;">
+          <div><div style="font-weight:800">🧠 Quick Quiz</div><div class="small">Answer one question at a time</div></div>
+          <div style="text-align:right"><div class="small">Score</div><div id="quizScore" style="font-weight:800">0</div></div>
+        </div>
+        <div id="quizArea" style="margin-top:12px">
+          <div id="quizQuestion" class="quiz-question">Press “New Question”</div>
+          <div class="choices" id="choicesList" aria-hidden="true"></div>
+          <div style="margin-top:12px; display:flex; gap:8px">
+            <button id="newQuestionBtn" class="mini-btn">New Question 🔁</button>
+            <button id="nextQuestionBtn" class="mini-btn" disabled>Next ➜</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🎭 SITUATION SIMULATOR -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;">
+          <div><div style="font-weight:800">🎭 Situation Simulator</div><div class="small">Get a random fun prompt</div></div>
+          <button id="simBtn" class="big-btn">Surprise me 🎲</button>
+        </div>
+        <div style="margin-top:12px">
+          <div id="simResult" class="simulator-prompt">Try it — get a prompt!</div>
+          <div style="margin-top:8px">
+            <button id="copySim" class="mini-btn">Copy</button>
+            <button id="shareSim" class="mini-btn">Share</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <aside class="right">
+      <!-- 😂 MEME GENERATOR -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;">
+          <div><div style="font-weight:800">😂 Meme Generator</div><div class="small">Powered by meme-api.com</div></div>
+          <button id="memeBtn" class="mini-btn">New Meme</button>
+        </div>
+        <img id="memeImg" class="meme-img" alt="Meme will appear here" />
+        <div class="meme-row">
+          <div class="small" id="memeSource">source: —</div>
+          <div style="flex:1"></div>
+          <button id="downloadMeme" class="mini-btn">Download</button>
+        </div>
+      </div>
+
+      <!-- ✨ QUICK TOOLS -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;">
+          <div><div style="font-weight:800">Quick Tools</div><div class="small">Tiny mood boosters ✨</div></div>
+          <button id="surpriseBtn" class="mini-btn">Random Boost ✨</button>
+        </div>
+        <div style="margin-top:12px">
+          <div id="boostResult" style="font-weight:700; color:#444">Welcome! Try something fun 👇</div>
+        </div>
+      </div>
+    </aside>
+     <div class="card" style="text-align:center;">
+        <h3>💡 Got a Fun Idea?</h3>
+        <p class="small">Share your own activity, scenario, or tool idea!</p>
+        <button id="contributeBtn" class="big-btn">Contribute 🚀</button>
+      </div>
+    </aside>
+
+    <footer>
+      <div>Tip: Press the big colorful buttons! 🎉</div>
+      <div class="small">No API keys needed — all free sources ❤️</div>
+    </footer>
+  </div>
+
+  <script>
+    const el = id => document.getElementById(id);
+    const randomFrom = arr => arr[Math.floor(Math.random()*arr.length)];
+    const safeText = html => {const d=document.createElement('div');d.innerHTML=html;return d.textContent;};
+
+// Robust Random Activity fetcher: tries multiple endpoints/proxies, then a local fallback.
+const LOCAL_ACTIVITIES = [
+  "Take a 10-minute walk and notice 5 new things.",
+  "Write a six-line poem about your last meal.",
+  "Try to draw with your non-dominant hand for 2 minutes.",
+  "Learn one phrase in a language you don't know.",
+  "Make a tiny paper origami and give it a name.",
+  "Do a 60-second dance party — no shame!",
+  "Find a new song and listen to it with headphones.",
+  "Organize one small drawer or shelf for 5 minutes.",
+  "Look up a weird animal and learn one fact about it.",
+  "Tell someone a joke (or invent one)."
+];
+
+async function fetchRandomActivity(){
+  const out = el('activityResult');
+  const typeTag = el('activityType');
+  const participants = el('activityParticipants');
+  const price = el('activityPrice');
+
+  out.textContent = '🎯 Finding fun ideas...';
+
+  // List of endpoints to try (direct boredapi + multiple CORS proxies)
+  const endpoints = [
+    'https://www.boredapi.com/api/activity', // direct (may fail on some setups)
+    'https://api.allorigins.win/raw?url=https://www.boredapi.com/api/activity',
+    'https://api.allorigins.cf/raw?url=https://www.boredapi.com/api/activity',
+    'https://thingproxy.freeboard.io/fetch/https://www.boredapi.com/api/activity',
+    'https://cors.bridged.cc/https://www.boredapi.com/api/activity' // last resort proxy
+  ];
+
+  // Helper that tries to parse JSON whether proxy returns JSON or raw text
+  async function fetchAndParse(url){
+    const resp = await fetch(url, { cache: 'no-store' });
+    if(!resp.ok) throw new Error('Bad response: ' + resp.status);
+    const ct = resp.headers.get('content-type') || '';
+    if(ct.includes('application/json')) return await resp.json();
+    // if proxy returned raw text, parse it
+    const txt = await resp.text();
+    try { return JSON.parse(txt); }
+    catch(e){ throw new Error('Failed to parse JSON from text'); }
+  }
+
+  // Try endpoints sequentially until one works
+  for(const ep of endpoints){
+    try{
+      const data = await fetchAndParse(ep);
+      // ensure it looks like the Bored API response
+      if(data && (data.activity || data.error)) {
+        // if Bored API returned an error (rare), skip to fallback
+        if(data.error) throw new Error('Bored API error');
+        out.textContent = data.activity || 'Try something fun!';
+        typeTag.textContent = data.type || '—';
+        participants.textContent = ('participants' in data) ? data.participants : '—';
+        price.textContent = (data.price === 0) ? 'free' : (data.price <= 0.3 ? 'cheap' : 'paid');
+        return;
+      }
+    }catch(err){
+      console.warn('Activity fetch failed for', ep, err);
+      // try next endpoint
+    }
+  }
+
+  // If we reach here, all network attempts failed — use local fallback (always works)
+  const local = randomFrom(LOCAL_ACTIVITIES);
+  out.textContent = local;
+  typeTag.textContent = 'local';
+  participants.textContent = '1';
+  price.textContent = 'free';
+}
+el('getActivityBtn').addEventListener('click', fetchRandomActivity);
+
+
+    // 🧠 Quiz
+    let currentAnswer=null, quizScore=0;
+    async function newQuizQuestion(){
+      el('quizQuestion').textContent='Loading...';
+      el('choicesList').innerHTML='';
+      try{
+        const r=await fetch('https://opentdb.com/api.php?amount=1&type=multiple');
+        const j=await r.json();
+        const q=j.results[0];
+        const correct=safeText(q.correct_answer);
+        const opts=[...q.incorrect_answers.map(safeText),correct].sort(()=>Math.random()-0.5);
+        currentAnswer=correct;
+        el('quizQuestion').textContent=safeText(q.question);
+        opts.forEach(opt=>{
+          const b=document.createElement('button');
+          b.className='choice'; b.textContent=opt;
+          b.onclick=()=>selectChoice(b,opt);
+          el('choicesList').appendChild(b);
+        });
+      }catch{el('quizQuestion').textContent='Failed to load question';}
+    }
+    function selectChoice(btn,opt){
+      [...el('choicesList').children].forEach(b=>b.disabled=true);
+      if(opt===currentAnswer){btn.classList.add('correct');quizScore++;el('quizScore').textContent=quizScore;}
+      else {btn.classList.add('wrong');[...el('choicesList').children].forEach(b=>{if(b.textContent===currentAnswer)b.classList.add('correct');});}
+      el('nextQuestionBtn').disabled=false;
+    }
+    el('newQuestionBtn').onclick=()=>{newQuizQuestion();el('nextQuestionBtn').disabled=true;};
+    el('nextQuestionBtn').onclick=()=>{newQuizQuestion();el('nextQuestionBtn').disabled=true;};
+
+    // 😂 Meme API
+    async function fetchMeme(){
+      const img=el('memeImg'), source=el('memeSource');
+      img.alt='Loading...';
+      try{
+        const res=await fetch('https://meme-api.com/gimme');
+        const data=await res.json();
+        img.src=data.url;
+        img.alt=data.title;
+        source.textContent=`source: r/${data.subreddit}`;
+      }catch{img.alt='Error loading meme';}
+    }
+    el('memeBtn').addEventListener('click',fetchMeme);
+    el('downloadMeme').addEventListener('click',async()=>{
+      const src=el('memeImg').src;
+      if(!src) return alert('No meme yet!');
+      const res=await fetch(src);
+      const blob=await res.blob();
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download='meme';
+      a.click();
+    });
+
+    // 🎭 Situation Simulator
+    const SIM_PROMPTS=[
+      "You're a pirate chef cooking only canned goods.",
+      "Detective discovers the cat runs a rival bakery.",
+      "Superhero whose power is making objects fluffy.",
+      "Interview for Professional Bubble Wrap Popper.",
+      "Blind date after swapping phones by mistake.",
+      "Mayor of an island where hats are vegetables.",
+      "Aliens ask to borrow sugar — negotiate trade.",
+      "Fortune teller who predicts using song lyrics.",
+      "Cooking show for ghosts — signature dish?",
+      "Pet ad for mythical creatures (dragon, unicorn)."
+    ];
+    el('simBtn').onclick=()=>{el('simResult').textContent=randomFrom(SIM_PROMPTS);};
+    el('copySim').onclick=()=>{navigator.clipboard.writeText(el('simResult').textContent);};
+    el('shareSim').onclick=()=>{navigator.share?.({text:el('simResult').textContent});};
+
+    // ✨ Quick Boosts
+    const BOOSTS=[
+      "Confetti! 🎉 (pretend it exploded)",
+      "You gained +5 curiosity points 🧠",
+      "Try saying a tongue twister 3 times!",
+      "Take 10 seconds to stretch 💪",
+      "Draw a doodle of a happy face ✏️",
+      "Sing the next line of your favorite song 🎵"
+    ];
+    el('surpriseBtn').onclick=()=>{el('boostResult').textContent=randomFrom(BOOSTS);};
+     async function loadCommunityIdeas(){
+      try {
+        const res = await fetch('/ideas');
+        const ideas = await res.json();
+        ideas.forEach(i=>{
+          if(i.type.includes('Random')) LOCAL_ACTIVITIES.push(i.content);
+          if(i.type.includes('Situation')) SIM_PROMPTS.push(i.content);
+          if(i.type.includes('Quick')) BOOSTS.push(i.content);
+        });
+        console.log(`Loaded ${ideas.length} community ideas 🎉`);
+      } catch (err) {
+        console.warn('Failed to load community ideas', err);
+      }
+    }
+
+
+
+
+     el('contributeBtn').onclick = () => { window.location.href = 'contribute.html'; };
+
+    // Auto-load a meme + activity on startup
+    fetchRandomActivity();
+    fetchMeme();
+    loadCommunityIdeas(); 
+  </script>
+</body>
+</html>

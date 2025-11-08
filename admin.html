@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>👑 Admin Panel — Boredom Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(10px);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+      animation: fadeIn 0.7s ease;
+    }
+
+    @keyframes fadeIn {
+      from {opacity:0; transform:translateY(20px);}
+      to {opacity:1; transform:translateY(0);}
+    }
+
+    h2 { margin-bottom: 1rem; }
+
+    input {
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 1rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      background: rgba(255,255,255,0.9);
+    }
+
+    button {
+      padding: 0.6rem 1.2rem;
+      background: #4facfe;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      background: #00f2fe;
+    }
+
+    .idea {
+      background: rgba(255,255,255,0.7);
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 12px;
+      text-align: left;
+    }
+
+    .small { font-size: 0.9rem; opacity: 0.8; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>👑 Admin Dashboard</h2>
+
+    <!-- Login Section -->
+    <div id="loginArea">
+      <input id="adminUser" placeholder="Admin Username">
+      <input id="adminPass" type="password" placeholder="Password">
+      <button id="adminLoginBtn">Login</button>
+      <p id="loginMsg" class="small"></p>
+    </div>
+
+    <!-- Idea Management -->
+    <div id="adminPanel" class="hidden">
+      <h3>💡 Pending Ideas</h3>
+      <div id="ideaList">Loading ideas...</div>
+      <button id="logoutBtn" style="margin-top:1rem;background:#ff6b6b;">Logout</button>
+    </div>
+  </div>
+
+  <script>
+    // 👑 Simple Admin Login (frontend auth + backend token validation)
+    const loginArea = document.getElementById('loginArea');
+    const adminPanel = document.getElementById('adminPanel');
+    const ideaList = document.getElementById('ideaList');
+    const msg = document.getElementById('loginMsg');
+
+    async function loginAdmin(){
+      const username = document.getElementById('adminUser').value.trim();
+      const password = document.getElementById('adminPass').value.trim();
+
+      if(!username || !password){
+        msg.textContent = '⚠️ Enter both fields.';
+        return;
+      }
+
+      msg.textContent = '⏳ Verifying...';
+      const res = await fetch('/admin/login', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+      if(data.success){
+        localStorage.setItem('adminToken', data.token);
+        loginArea.classList.add('hidden');
+        adminPanel.classList.remove('hidden');
+        loadIdeas();
+      } else {
+        msg.textContent = '❌ ' + (data.message || 'Invalid login.');
+      }
+    }
+
+    async function loadIdeas(){
+      const token = localStorage.getItem('adminToken');
+      const res = await fetch('/admin/ideas', {
+        headers:{'Authorization': 'Bearer ' + token}
+      });
+      const data = await res.json();
+      ideaList.innerHTML = '';
+      if(!data.length){
+        ideaList.innerHTML = '<p>No ideas yet 🕓</p>';
+        return;
+      }
+      data.forEach(i=>{
+        const div = document.createElement('div');
+        div.className = 'idea';
+        div.innerHTML = `
+          <p><b>${i.type}</b>: ${i.content}</p>
+          <p><i>By: ${i.author}</i></p>
+          <p>Status: ${i.approved ? '✅ Approved' : '🕓 Pending'}</p>
+          ${!i.approved ? `
+            <button onclick="approve(${i.id})">Approve ✅</button>
+            <button onclick="reject(${i.id})">Reject ❌</button>` : ''}
+        `;
+        ideaList.appendChild(div);
+      });
+    }
+
+    async function approve(id){
+      const token = localStorage.getItem('adminToken');
+      await fetch('/admin/approve', {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({id})
+      });
+      loadIdeas();
+    }
+
+    async function reject(id){
+      const token = localStorage.getItem('adminToken');
+      await fetch('/admin/reject', {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({id})
+      });
+      loadIdeas();
+    }
+
+    document.getElementById('adminLoginBtn').onclick = loginAdmin;
+    document.getElementById('logoutBtn').onclick = ()=>{
+      localStorage.removeItem('adminToken');
+      location.reload();
+    };
+
+    // Auto-login if token valid
+    (async()=>{
+      const token = localStorage.getItem('adminToken');
+      if(token){
+        const check = await fetch('/admin/verify',{headers:{'Authorization':'Bearer '+token}});
+        const ok = await check.json();
+        if(ok.valid){
+          loginArea.classList.add('hidden');
+          adminPanel.classList.remove('hidden');
+          loadIdeas();
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
