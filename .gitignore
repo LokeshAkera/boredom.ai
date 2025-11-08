@@ -1,3 +1,5 @@
-node_modules/
+# Hide environment and sensitive files
+.env
 users.json
 ideas.json
+node_modules/

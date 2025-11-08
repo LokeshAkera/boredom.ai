@@ -1,6 +1,9 @@
+// ====== 📦 Dependencies ======
 const express = require('express');
 const fs = require('fs');
 const cors = require('cors');
+require('dotenv').config(); // ✅ load .env file
+
 const app = express();
 
 app.use(cors());
@@ -16,10 +19,11 @@ function writeJSON(file, data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
 }
 
-// ====== ⚙️ Config ======
-const ADMIN_USER = 'lokesh';        // change this to your name
-const ADMIN_PASS = '12345';         // change this to your secret password
-const ADMIN_TOKEN = 'supersecrettoken123'; // random secret string for auth
+// ====== ⚙️ Config from .env ======
+const ADMIN_USER = process.env.ADMIN_USER;
+const ADMIN_PASS = process.env.ADMIN_PASS;
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
+const PORT = process.env.PORT || 3000;
 
 // ====== 🧍 User Registration ======
 app.post('/register', (req, res) => {
@@ -75,7 +79,7 @@ app.post('/admin/login', (req, res) => {
   }
 });
 
-// Verify token route (used by frontend auto-login)
+// Verify token route
 app.get('/admin/verify', (req, res) => {
   const auth = req.headers.authorization;
   if (auth === 'Bearer ' + ADMIN_TOKEN) {
@@ -96,13 +100,10 @@ function verifyAdmin(req, res, next) {
 }
 
 // ====== 👑 Admin Routes ======
-
-// List all ideas (approved + pending)
 app.get('/admin/ideas', verifyAdmin, (req, res) => {
   res.json(readJSON('ideas.json'));
 });
 
-// Approve idea
 app.post('/admin/approve', verifyAdmin, (req, res) => {
   const ideas = readJSON('ideas.json');
   const idea = ideas.find(i => i.id === req.body.id);
@@ -111,7 +112,6 @@ app.post('/admin/approve', verifyAdmin, (req, res) => {
   res.json({ success: true });
 });
 
-// Reject idea
 app.post('/admin/reject', verifyAdmin, (req, res) => {
   let ideas = readJSON('ideas.json');
   ideas = ideas.filter(i => i.id !== req.body.id);
@@ -120,4 +120,4 @@ app.post('/admin/reject', verifyAdmin, (req, res) => {
 });
 
 // ====== 🚀 Start Server ======
-app.listen(3000, () => console.log('✅ Server running → http://localhost:3000'));
+app.listen(PORT, () => console.log(`✅ Server running → http://localhost:${PORT}`));
