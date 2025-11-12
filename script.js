@@ -1,13 +1,13 @@
 const el = id => document.getElementById(id);
-const randomFrom = arr => arr[Math.floor(Math.random()*arr.length)];
+const randomFrom = arr => arr[Math.floor(Math.random() * arr.length)];
 const safeText = html => { const d = document.createElement('div'); d.innerHTML = html; return d.textContent; };
 
 // ----- Feature Tabs -----
 const tabs = document.querySelectorAll('.tab-btn');
 const features = document.querySelectorAll('.feature');
 
-tabs.forEach(tab=>{
-  tab.addEventListener('click', ()=>{
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
     tabs.forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     const target = tab.dataset.target;
@@ -15,51 +15,37 @@ tabs.forEach(tab=>{
   });
 });
 
-// ----- Base Prompts -----
-let LOCAL_ACTIVITIES = [
-  "Dance like nobody’s watching—for 60 seconds straight 💃",
-  "Write a 6-word story about your last snack 🍕",
-  "Draw a doodle of your mood right now 🎨",
-  "Try to juggle three random objects in reach 🤹",
-  "Invent a silly handshake for your left hand ✋",
-  "Sing the chorus of a song in opera style 🎶",
-  "Organize one small thing around you—satisfying! 🗂️",
-  "Look up the weirdest animal you can find 🐙",
-  "Tell a joke to yourself and rate it 1-10 😂",
-  "Make up a new tongue twister and try it 3 times 🤪"
-];
+// ---------- IDEA STORAGE ----------
+let LOCAL_ACTIVITIES = [];
+let SIM_PROMPTS = [];
+let BOOSTS = [];
 
-let SIM_PROMPTS = [
-  "You are a pirate trying to teach a cat to sail a ship 🏴‍☠️🐱",
-  "You're a barista who only serves invisible coffee ☕️✨",
-  "A superhero whose power is turning things fluffy—start your mission 🦸‍♂️🧸",
-  "You are a detective interrogating a talking muffin 🕵️‍♀️🧁",
-  "You accidentally switched lives with your pet for an hour—describe it 🐶➡️🧑",
-  "You're hosting a chat show for plants—interview a cactus 🌵🎤",
-  "You just discovered a vending machine that gives life advice—read today's tip 🤖",
-  "A ghost auditions for a cooking show—perform your monologue 👻🍳",
-  "You're stuck in a tiny time-travel agency—sell a 3-line micro-trip ⏳",
-  "You're reviewing jam using only musical metaphors—go! 🍓🎵"
-];
+// ---------- Load Ideas from ideas.json ----------
+async function loadIdeas() {
+  try {
+    const res = await fetch('newideas.json');
+    const ideas = await res.json();
 
-let BOOSTS = [
-  "Give yourself a big smile in the mirror—hold it for 7 seconds 😄",
-  "Name three imaginary planets in 10 seconds 🌍",
-  "Stretch your arms, wiggle your fingers, and shake off boredom 💪",
-  "Say 'red leather, yellow leather' three times fast without laughing 🤪",
-  "Hum your favorite tune and make up a dance move 🎶💃",
-  "Invent a secret handshake for your left foot 🦶",
-  "Send a silly compliment to a friend via text 💌",
-  "Take a deep breath and shout a random positive word 🗣️✨"
-];
+    // Separate ideas by type
+    ideas.forEach(i => {
+      const type = i.type.toLowerCase();
+      if (type.includes('random')) LOCAL_ACTIVITIES.push(i.content);
+      if (type.includes('situation')) SIM_PROMPTS.push(i.content);
+      if (type.includes('quick')) BOOSTS.push(i.content);
+    });
 
-// ----- Random Activity -----
+    console.log(`✅ Loaded ${ideas.length} ideas from ideas.json`);
+  } catch (err) {
+    console.error('❌ Failed to load ideas.json', err);
+  }
+}
+
+// ---------- Random Activity ----------
 async function fetchRandomActivity() {
   const out = el('activityResult');
   const typeTag = el('activityType');
   const participants = el('activityParticipants');
   const price = el('activityPrice');
-
   out.textContent = '🎯 Finding fun ideas...';
 
   try {
@@ -69,18 +55,21 @@ async function fetchRandomActivity() {
     typeTag.textContent = data.type;
     participants.textContent = data.participants;
     price.textContent = data.price <= 0.3 ? 'cheap' : 'paid';
-  } catch { 
-    const local = randomFrom(LOCAL_ACTIVITIES);
-    out.textContent = local;
-    typeTag.textContent='local';
-    participants.textContent='1';
-    price.textContent='free';
+  } catch {
+    if (LOCAL_ACTIVITIES.length === 0) {
+      out.textContent = 'No local ideas loaded yet 😕';
+    } else {
+      const local = randomFrom(LOCAL_ACTIVITIES);
+      out.textContent = local;
+      typeTag.textContent = 'local';
+      participants.textContent = '1';
+      price.textContent = 'free';
+    }
   }
 }
-
 el('getActivityBtn').addEventListener('click', fetchRandomActivity);
 
-// ----- Quiz -----
+// ---------- Quiz ----------
 let currentAnswer = null, quizScore = 0;
 
 async function newQuizQuestion() {
@@ -114,8 +103,8 @@ async function newQuizQuestion() {
 function selectChoice(btn, opt) {
   [...el('choicesList').children].forEach(b => b.disabled = true);
   if (opt === currentAnswer) {
-    btn.classList.add('correct'); 
-    quizScore++; 
+    btn.classList.add('correct');
+    quizScore++;
     el('quizScore').textContent = quizScore;
   } else {
     btn.classList.add('wrong');
@@ -126,72 +115,104 @@ function selectChoice(btn, opt) {
   el('nextQuestionBtn').disabled = false;
 }
 
-el('newQuestionBtn').onclick = () => { 
-  newQuizQuestion(); 
-  el('nextQuestionBtn').disabled = true; 
+el('newQuestionBtn').onclick = () => {
+  newQuizQuestion();
+  el('nextQuestionBtn').disabled = true;
+};
+el('nextQuestionBtn').onclick = () => {
+  newQuizQuestion();
+  el('nextQuestionBtn').disabled = true;
 };
 
-el('nextQuestionBtn').onclick = () => { 
-  newQuizQuestion(); 
-  el('nextQuestionBtn').disabled = true; 
+// ---------- Simulator ----------
+el('simBtn').onclick = () => {
+  el('simResult').textContent = randomFrom(SIM_PROMPTS.length ? SIM_PROMPTS : ['No simulation ideas yet 😕']);
+};
+el('copySim').onclick = () => {
+  navigator.clipboard.writeText(el('simResult').textContent);
+};
+el('shareSim').onclick = () => {
+  navigator.share?.({ text: el('simResult').textContent });
 };
 
-// ----- Simulator -----
-el('simBtn').onclick = () => { 
-  el('simResult').textContent = randomFrom(SIM_PROMPTS); 
-};
-el('copySim').onclick = () => { navigator.clipboard.writeText(el('simResult').textContent); };
-el('shareSim').onclick = () => { navigator.share?.({ text: el('simResult').textContent }); };
-
-// ----- Quick Boost -----
-el('surpriseBtn').onclick = () => { 
-  el('boostResult').textContent = randomFrom(BOOSTS); 
+// ---------- Quick Boost ----------
+el('surpriseBtn').onclick = () => {
+  el('boostResult').textContent = randomFrom(BOOSTS.length ? BOOSTS : ['No quick boosts yet 😕']);
 };
 
-// ----- Meme Generator -----
-async function fetchMeme(){
+// ---------- Meme Generator ----------
+async function fetchMeme() {
   const img = el('memeImg'), source = el('memeSource');
-  img.alt='Loading...';
-  img.src=''; 
-
+  img.alt = 'Loading...';
+  img.src = '';
   try {
     const res = await fetch('https://meme-api.com/gimme');
     const data = await res.json();
     img.src = data.url;
     img.alt = data.title;
-    img.dataset.title = data.title.replace(/[^\w\d-_]+/g,'_');
+    img.dataset.title = data.title.replace(/[^\w\d-_]+/g, '_');
     source.textContent = `source: r/${data.subreddit}`;
   } catch {
-    img.alt='Error loading meme';
-    source.textContent='source: —';
+    img.alt = 'Error loading meme';
+    source.textContent = 'source: —';
   }
 }
-el('memeBtn').addEventListener('click', fetchMeme);
 
-// ----- Load Community Ideas & Merge Prompts -----
-async function loadCommunityIdeas() {
+// Meme download
+el('downloadMeme').addEventListener('click', async () => {
+  const img = el('memeImg');
+  if (!img.src) return alert('No meme yet!');
   try {
-    const res = await fetch('/ideas');  // ideas.json served from server
-    const ideas = await res.json();
-
-    ideas.forEach(i => {
-      if (!i.approved) return; // skip unapproved
-
-      if (i.type.includes('Random')) LOCAL_ACTIVITIES.push(i.content);
-      if (i.type.includes('Situation')) SIM_PROMPTS.push(i.content);
-      if (i.type.includes('Quick')) BOOSTS.push(i.content);
-    });
-
-    console.log(`Loaded ${ideas.length} community ideas 🎉`);
-  } catch (err) {
-    console.warn('Failed to load community ideas', err);
+    const res = await fetch(img.src);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const fileName = img.dataset.title || 'meme';
+    a.href = url;
+    a.download = fileName + '.jpg';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    console.error('Download failed:', e);
+    alert('Failed to download meme.');
   }
+});
+
+// Meme popup on long press
+let longPressTimer;
+const memeImg = el('memeImg');
+memeImg.addEventListener('mousedown', () => {
+  longPressTimer = setTimeout(() => showMemePopup(), 500);
+});
+memeImg.addEventListener('mouseup', () => clearTimeout(longPressTimer));
+memeImg.addEventListener('mouseleave', () => clearTimeout(longPressTimer));
+
+function showMemePopup() {
+  const popup = document.createElement('div');
+  popup.className = 'meme-popup';
+  popup.innerHTML = `
+    <div class="meme-popup-content">
+      <img src="${memeImg.src}" alt="Meme" class="popup-img">
+      <button id="closePopup">✖</button>
+      <button id="downloadPopupMeme">⬇️ Download</button>
+    </div>
+  `;
+  document.body.appendChild(popup);
+
+  el('closePopup').onclick = () => popup.remove();
+  el('downloadPopupMeme').onclick = () => el('downloadMeme').click();
 }
 
-// ----- Contribute -----
-el('contributeBtn').onclick = () => { window.location.href='contribute.html'; };
+// ---------- Contribute ----------
+el('contributeBtn').onclick = () => {
+  window.location.href = 'contribute.html';
+};
 
-// ----- Auto-load -----
-fetchRandomActivity();
-fetchMeme();
-loadCommunityIdeas();
+// ---------- Initialize ----------
+(async function init() {
+  await loadIdeas();
+  fetchRandomActivity();
+  fetchMeme();
+})();
