@@ -157,7 +157,7 @@ async function fetchMeme() {
     source.textContent = 'source: —';
   }
 }
-
+el('memeBtn').addEventListener('click', fetchMeme);
 // Meme download
 el('downloadMeme').addEventListener('click', async () => {
   const img = el('memeImg');
@@ -216,3 +216,4 @@ el('contributeBtn').onclick = () => {
   fetchRandomActivity();
   fetchMeme();
 })();
+
